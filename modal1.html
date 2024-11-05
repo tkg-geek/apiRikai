@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal1</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="modal-inner-content">
+      <h2>Maps JavaScript API</h2>
+      <p>マップの基本的な表示をカスタムできる。</p>
+      <div id="map"></div>
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key=******&language=ja&callback=initMap&v=weekly&libraries=marker"
+        async
+        defer
+      ></script>
+      <script>
+        function initMap() {
+          var MyLatLng = new google.maps.LatLng(
+            35.66940620782323,
+            139.70302703286933
+          );
+          var Options = {
+            zoom: 17,
+            center: MyLatLng,
+            mapTypeId: "roadmap",
+          };
+          var map = new google.maps.Map(
+            document.getElementById("map"),
+            Options
+          );
+          var marker = new google.maps.Marker({
+            position: { lat: 35.669440510334724, lng: 139.70301496888644 },
+            map: map,
+            icon: {
+              url: "img/mapicon2.png",
+              scaledSize: new google.maps.Size(90, 90),
+            },
+            title: "Custom Marker",
+          });
+          var marker = new google.maps.Marker({
+            position: { lat: 35.66978832513338, lng: 139.70536607215988 },
+            map: map,
+            icon: {
+              url: "img/mapicon1.png",
+              scaledSize: new google.maps.Size(100, 100),
+            },
+            title: "Custom Marker",
+          });
+          var marker = new google.maps.Marker({
+            position: { lat: 35.66970607654234, lng: 139.7034731377266 },
+            map: map,
+            icon: {
+              url: "img/mapicon1.png",
+              scaledSize: new google.maps.Size(100, 100),
+            },
+            title: "Custom Marker",
+          });
+          var marker = new google.maps.Marker({
+            position: { lat: 35.668424138671995, lng: 139.7049275341065 },
+            map: map,
+            icon: {
+              url: "img/mapicon1.png",
+              scaledSize: new google.maps.Size(100, 100),
+            },
+            title: "Custom Marker",
+          });
+          var marker = new google.maps.Marker({
+            position: { lat: 35.66998156244489, lng: 139.70618091041874 },
+            map: map,
+            icon: {
+              url: "img/mapicon3.png",
+              scaledSize: new google.maps.Size(140, 140),
+            },
+            title: "Custom Marker",
+          });
+        }
+      </script>
+    </div>
+  </body>
+</html>

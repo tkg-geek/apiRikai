@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal9</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://maps.googleapis.com/maps/api/js?key=******&libraries=places"></script>
+  </head>
+  <body>
+    <div class="modal-inner-content">
+      <h2>Air Quality API</h2>
+      <p>大気汚染の状況を可視化できます。</p>
+      <div id="map"></div>
+      <script>
+        let map;
+
+        function initMap() {
+          // 地図を特定の地点に初期化 (東京駅の位置)
+          const location = { lat: 35.681236, lng: 139.767125 };
+          map = new google.maps.Map(document.getElementById("map"), {
+            center: location,
+            zoom: 12,
+          });
+
+          // マーカーを地図上に追加
+          const marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            title: "東京駅",
+          });
+
+          // 空気質情報を取得
+          getAirQuality(location);
+        }
+
+        async function getAirQuality(location) {
+          try {
+            const url = `https://maps.googleapis.com/maps/api/airquality/v1/current?location=${location.lat},${location.lng}&key=YOUR_API_KEY`;
+
+            // APIリクエストを送信
+            const response = await fetch(url);
+            const data = await response.json();
+
+            // 空気質データを処理して表示
+            displayAirQuality(data);
+          } catch (error) {
+            console.error("空気質情報の取得中にエラーが発生しました:", error);
+          }
+        }
+
+        function displayAirQuality(data) {
+          const airQualityDiv = document.getElementById("air-quality-info");
+
+          // 空気質インデックスと説明を表示
+          if (data && data.results && data.results[0]) {
+            const airQuality = data.results[0];
+            airQualityDiv.innerHTML = `
+                    <h2>空気質情報</h2>
+                    <p><strong>空気質インデックス（AQI）:</strong> ${airQuality.aqi}</p>
+                    <p><strong>状況:</strong> ${airQuality.category}</p>
+                    <p><strong>主要汚染物質:</strong> ${airQuality.dominant_pollutant}</p>
+                `;
+          } else {
+            airQualityDiv.innerHTML = `<p>空気質情報が見つかりませんでした。</p>`;
+          }
+        }
+
+        window.onload = initMap;
+      </script>
+    </div>
+  </body>
+</html>

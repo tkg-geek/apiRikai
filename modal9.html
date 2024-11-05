@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal9</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="modal-inner-content">
+      <h2>Aerial View API</h2>
+      <p>3D地理空間画像による鳥瞰図動画です。</p>
+      <button onclick="getAerialView()">Aerial Viewを取得</button>
+      <div id="aerial-view-output"></div>
+      <script>
+        async function getAerialView() {
+          const location = { lat: 35.66940620782323, lng: 139.70302703286933 };
+          const apiKey = "******";
+          const url = `https://aerialview.googleapis.com/v1/aerialview?location=${location.lat},${location.lng}&key=${apiKey}`;
+
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              const data = await response.json();
+              displayAerialView(data);
+            } else {
+              console.error(
+                "エラーレスポンス:",
+                response.status,
+                response.statusText
+              );
+              document.getElementById("aerial-view-output").innerText =
+                "航空ビューの取得に失敗しました。";
+            }
+          } catch (error) {
+            console.error("エラーが発生しました:", error);
+            document.getElementById("aerial-view-output").innerText =
+              "航空ビューの取得中にエラーが発生しました。";
+          }
+        }
+
+        function displayAerialView(data) {
+          const outputDiv = document.getElementById("aerial-view-output");
+
+          // 航空ビューの動画リンクを表示
+          if (data && data.aerialViewUrl) {
+            outputDiv.innerHTML = `
+                    <h2>航空ビューリンク:</h2>
+                    <p><a href="${data.aerialViewUrl}" target="_blank">航空ビューを見る</a></p>
+                `;
+          } else {
+            outputDiv.innerText = "航空ビューが利用できません。";
+          }
+        }
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal2</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="modal-inner-content">
+      <h2>Geocoding API</h2>
+      <p>画像の位置情報から地図を表示</p>
+      <div id="drop-zone">画像ファイルをここにドラッグ＆ドロップ</div>
+      <div id="map"></div>
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key=******&language=ja&callback=initMap&v=weekly&libraries=marker"
+        async
+        defer
+      ></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
+      <script>
+        let map;
+        let marker;
+
+        function initMap() {
+          map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 35.681167, lng: 139.767052 },
+            zoom: 8,
+          });
+        }
+
+        // ドラッグ＆ドロップのエリア
+        const dropZone = document.getElementById("drop-zone");
+
+        // イベントリスナーを追加
+        dropZone.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          dropZone.classList.add("dragover");
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+          dropZone.classList.remove("dragover");
+        });
+
+        dropZone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          dropZone.classList.remove("dragover");
+
+          const file = event.dataTransfer.files[0];
+          if (file && file.type.startsWith("image/")) {
+            processFile(file);
+          } else {
+            alert("画像ファイルをドロップしてください。");
+          }
+        });
+
+        // 画像ファイルを処理し、位置情報を取得
+        function processFile(file) {
+          EXIF.getData(file, function () {
+            const lat = EXIF.getTag(this, "GPSLatitude");
+            const lng = EXIF.getTag(this, "GPSLongitude");
+            const latRef = EXIF.getTag(this, "GPSLatitudeRef") || "N";
+            const lngRef = EXIF.getTag(this, "GPSLongitudeRef") || "E";
+
+            if (lat && lng) {
+              const latitude = convertDMSToDD(lat, latRef);
+              const longitude = convertDMSToDD(lng, lngRef);
+
+              // マーカーを更新
+              if (marker) marker.setMap(null);
+              marker = new google.maps.Marker({
+                position: { lat: latitude, lng: longitude },
+                map: map,
+              });
+
+              // 地図の中心を設定
+              map.setCenter({ lat: latitude, lng: longitude });
+              map.setZoom(16);
+            } else {
+              alert("この画像には位置情報が含まれていません。");
+            }
+          });
+        }
+
+        // 度分秒（DMS）を度（DD）に変換する関数
+        function convertDMSToDD(dms, ref) {
+          const degrees = dms[0];
+          const minutes = dms[1];
+          const seconds = dms[2];
+          let dd = degrees + minutes / 60 + seconds / (60 * 60);
+
+          // 南緯または西経の場合はマイナスにする
+          if (ref === "S" || ref === "W") {
+            dd = dd * -1;
+          }
+          return dd;
+        }
+      </script>
+    </div>
+  </body>
+</html>
